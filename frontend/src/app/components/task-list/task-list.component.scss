@@ -1,0 +1,113 @@
+.task-list-container {
+  padding: 20px;
+}
+
+.header-section {
+  margin-bottom: 20px;
+
+  h2 {
+    margin-bottom: 16px;
+  }
+}
+
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .search-box {
+    flex: 1;
+    min-width: 300px;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 50px 0;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px 0;
+  color: #666;
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 18px;
+  }
+}
+
+.task-table-container {
+  overflow-x: auto;
+
+  .task-table {
+    width: 100%;
+
+    .description-cell {
+      max-width: 300px;
+
+      .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .task-row {
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+
+      &.resolved {
+        background-color: rgba(0, 200, 0, 0.05);
+      }
+    }
+  }
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+
+  &.pending {
+    background-color: #9e9e9e;
+  }
+
+  &.in_progress {
+    background-color: #2196f3;
+  }
+
+  &.resolved {
+    background-color: #4caf50;
+  }
+
+  &.out_of_stock {
+    background-color: #ff9800;
+  }
+
+  &.blocked {
+    background-color: #f44336;
+  }
+}
+
+.not-assigned {
+  color: #999;
+  font-style: italic;
+}

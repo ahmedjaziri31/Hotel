@@ -1,0 +1,131 @@
+<div class="task-list-container">
+  <div class="header-section">
+    <h2>Task Management</h2>
+    <div class="filter-controls">
+      <div class="search-box">
+        <mat-form-field appearance="outline">
+          <mat-label>Search</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="search()" placeholder="Search complaints...">
+          <button mat-icon-button matSuffix (click)="search()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="status-filter">
+        <mat-button-toggle-group [(ngModel)]="selectedStatus" (change)="filterByStatus(selectedStatus)">
+          <mat-button-toggle value="all">All</mat-button-toggle>
+          <mat-button-toggle value="pending">Pending</mat-button-toggle>
+          <mat-button-toggle value="in_progress">In Progress</mat-button-toggle>
+          <mat-button-toggle value="resolved">Resolved</mat-button-toggle>
+          <mat-button-toggle value="blocked">Blocked</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <button mat-icon-button color="primary" (click)="refreshTasks()" matTooltip="Refresh Tasks">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div class="no-data" *ngIf="!loading && filteredTasks.length === 0">
+    <mat-icon>assignment_late</mat-icon>
+    <p>No tasks found matching your criteria.</p>
+  </div>
+
+  <div class="task-table-container" *ngIf="!loading && filteredTasks.length > 0">
+    <table mat-table [dataSource]="filteredTasks" class="task-table">
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let task"> #{{ task.id }} </td>
+      </ng-container>
+
+      <!-- Room Column -->
+      <ng-container matColumnDef="room">
+        <th mat-header-cell *matHeaderCellDef> Room </th>
+        <td mat-cell *matCellDef="let task"> {{ task.complaint.qr_code.room.room_number }} </td>
+      </ng-container>
+
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef> Description </th>
+        <td mat-cell *matCellDef="let task" class="description-cell">
+          <div class="truncate">{{ task.complaint.description }}</div>
+        </td>
+      </ng-container>
+
+      <!-- Urgency Column -->
+      <ng-container matColumnDef="urgency">
+        <th mat-header-cell *matHeaderCellDef> Urgency </th>
+        <td mat-cell *matCellDef="let task">
+          <mat-chip [color]="getUrgencyColor(task.complaint.urgency_level)" selected>
+            {{ task.complaint.urgency_level }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let task">
+          <span class="status-badge" [ngClass]="task.status">
+            {{ formatStatus(task.status) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Assigned To Column -->
+      <ng-container matColumnDef="assigned">
+        <th mat-header-cell *matHeaderCellDef> Assigned To </th>
+        <td mat-cell *matCellDef="let task">
+          <span *ngIf="task.assigned_user">{{ task.assigned_user.name }}</span>
+          <span *ngIf="!task.assigned_user" class="not-assigned">Not Assigned</span>
+        </td>
+      </ng-container>
+
+      <!-- Created At Column -->
+      <ng-container matColumnDef="created">
+        <th mat-header-cell *matHeaderCellDef> Created </th>
+        <td mat-cell *matCellDef="let task"> {{ task.created_at | date:'short' }} </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let task">
+          <button mat-icon-button color="primary" (click)="viewTaskDetails(task)" matTooltip="View Details">
+            <mat-icon>visibility</mat-icon>
+          </button>
+
+          <button *ngIf="task.status === 'pending' && canAssignTask()"
+                  mat-icon-button
+                  color="accent"
+                  (click)="assignTask(task, $event)"
+                  matTooltip="Assign Task">
+            <mat-icon>person_add</mat-icon>
+          </button>
+
+          <button *ngIf="task.status === 'in_progress'"
+                  mat-icon-button
+                  color="accent"
+                  (click)="completeTask(task, $event)"
+                  matTooltip="Mark as Complete">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          (click)="viewTaskDetails(row)"
+          class="task-row"
+          [ngClass]="{'resolved': row.status === 'resolved'}"></tr>
+    </table>
+  </div>
+</div>

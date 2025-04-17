@@ -1,0 +1,68 @@
+<div class="qr-generator-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>QR Code Generator</mat-card-title>
+      <mat-card-subtitle>Generate QR codes for hotel rooms</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="qrForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Select Room</mat-label>
+            <mat-select formControlName="roomId">
+              <mat-option *ngFor="let room of rooms" [value]="room.id">
+                Room {{ room.room_number }} ({{ room.type }})
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="qrForm.get('roomId')?.hasError('required')">
+              Room is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Expiry Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="expiryDate" placeholder="MM/DD/YYYY">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="qrForm.get('expiryDate')?.hasError('required')">
+              Expiry date is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row button-row">
+          <button mat-raised-button color="primary" type="submit" [disabled]="qrForm.invalid || loading">
+            <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+            <span *ngIf="!loading">Generate QR Code</span>
+          </button>
+          <button mat-button type="button" (click)="resetForm()">Reset</button>
+        </div>
+      </form>
+
+      <div *ngIf="generatedQrCode" class="qr-result">
+        <div class="qr-info">
+          <h3>QR Code Generated</h3>
+          <p><strong>Room:</strong> {{ generatedQrCode.room.room_number }}</p>
+          <p><strong>Type:</strong> {{ generatedQrCode.room.type }}</p>
+          <p><strong>Expiry Date:</strong> {{ generatedQrCode.qr_code.expiry_date | date }}</p>
+          <p><strong>Code:</strong> {{ generatedQrCode.qr_code.unique_code }}</p>
+        </div>
+
+        <div class="qr-image">
+          <qrcode [qrdata]="qrDataUrl" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
+          <div class="qr-actions">
+            <button mat-raised-button color="accent" [cdkCopyToClipboard]="qrDataUrl">
+              Copy QR URL
+            </button>
+            <a mat-raised-button color="primary" [href]="qrDataUrl" target="_blank">
+              View QR Link
+            </a>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

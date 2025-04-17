@@ -1,0 +1,41 @@
+<div class="dashboard-container">
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button (click)="toggleSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="app-title">Hotel Complaint System</span>
+    <span class="spacer"></span>
+    <span class="user-info" *ngIf="currentUser">
+      <span class="user-name">{{ currentUser.name }}</span>
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <span class="user-role">{{ currentUser.role | titlecase }}</span>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </span>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav mode="side" [opened]="sidenavOpen" class="sidenav">
+      <mat-nav-list>
+        <a mat-list-item routerLink="/tasks" routerLinkActive="active-link">
+          <mat-icon mat-list-icon>assignment</mat-icon>
+          <span>Tasks</span>
+        </a>
+        <a mat-list-item *ngIf="canAccessQrGenerator()" routerLink="/qr-generator" routerLinkActive="active-link">
+          <mat-icon mat-list-icon>qr_code</mat-icon>
+          <span>QR Code Generator</span>
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="sidenav-content">
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

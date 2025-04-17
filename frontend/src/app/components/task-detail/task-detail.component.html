@@ -1,0 +1,60 @@
+<h2 mat-dialog-title *ngIf="!loading && !error">Task Details #{{ task.id }}</h2>
+<h2 mat-dialog-title *ngIf="!loading && error">Error</h2>
+<h2 mat-dialog-title *ngIf="loading">Loading...</h2>
+
+<mat-dialog-content>
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && task" class="task-details">
+    <div class="task-header">
+      <div class="status-chip" [ngClass]="getStatusClass(task.status)">
+        {{ formatStatus(task.status) }}
+      </div>
+      <mat-chip [color]="getUrgencyColor(task.complaint.urgency_level)" selected>
+        {{ task.complaint.urgency_level }}
+      </mat-chip>
+    </div>
+
+    <div class="room-info">
+      <h3>Room Information</h3>
+      <p><strong>Room Number:</strong> {{ task.complaint.qr_code.room.room_number }}</p>
+      <p><strong>Room Type:</strong> {{ task.complaint.qr_code.room.type }}</p>
+      <p><strong>Floor:</strong> {{ task.complaint.qr_code.room.floor }}</p>
+    </div>
+
+    <div class="complaint-info">
+      <h3>Complaint Details</h3>
+      <p><strong>Client Name:</strong> {{ task.complaint.client_name }}</p>
+      <p><strong>Submitted:</strong> {{ task.complaint.created_at | date:'medium' }}</p>
+      <div class="description">
+        <p><strong>Description:</strong></p>
+        <p class="description-text">{{ task.complaint.description }}</p>
+      </div>
+    </div>
+
+    <div class="assignment-info">
+      <h3>Assignment Information</h3>
+      <p *ngIf="task.assigned_user"><strong>Assigned To:</strong> {{ task.assigned_user.name }}</p>
+      <p *ngIf="!task.assigned_user"><strong>Assigned To:</strong> <span class="not-assigned">Not Assigned</span></p>
+
+      <p *ngIf="task.approver"><strong>Approved By:</strong> {{ task.approver.name }}</p>
+      <p *ngIf="!task.approver"><strong>Approved By:</strong> <span class="not-assigned">Not Approved</span></p>
+
+      <p *ngIf="task.notes"><strong>Notes:</strong></p>
+      <p *ngIf="task.notes" class="notes-text">{{ task.notes }}</p>
+      <p *ngIf="!task.notes" class="not-assigned">No notes available</p>
+
+      <p *ngIf="task.completed_at"><strong>Completed:</strong> {{ task.completed_at | date:'medium' }}</p>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

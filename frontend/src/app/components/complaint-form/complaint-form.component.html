@@ -1,0 +1,87 @@
+<div class="complaint-form-container">
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+    <p>Loading...</p>
+  </div>
+
+  <div *ngIf="!loading && invalidQr" class="invalid-qr">
+    <mat-icon color="warn">error</mat-icon>
+    <h2>Invalid QR Code</h2>
+    <p>The QR code you scanned is invalid, expired, or inactive.</p>
+    <p>Please contact hotel reception for assistance.</p>
+  </div>
+
+  <div *ngIf="!loading && !invalidQr && !submitted">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Submit a Complaint</mat-card-title>
+        <mat-card-subtitle *ngIf="roomDetails">Room {{ roomDetails.room_number }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div *ngIf="roomDetails" class="room-info">
+          <p><strong>Room Type:</strong> {{ roomDetails.type }}</p>
+          <p><strong>Floor:</strong> {{ roomDetails.floor }}</p>
+        </div>
+
+        <form [formGroup]="complaintForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Your Name</mat-label>
+              <input matInput formControlName="clientName" placeholder="Enter your name" required>
+              <mat-error *ngIf="complaintForm.get('clientName')?.hasError('required')">
+                Name is required
+              </mat-error>
+              <mat-error *ngIf="complaintForm.get('clientName')?.hasError('maxlength')">
+                Name cannot exceed 100 characters
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description of Issue</mat-label>
+              <textarea matInput formControlName="description" rows="5" placeholder="Please describe the issue you're experiencing..." required></textarea>
+              <mat-error *ngIf="complaintForm.get('description')?.hasError('required')">
+                Description is required
+              </mat-error>
+              <mat-error *ngIf="complaintForm.get('description')?.hasError('minlength')">
+                Description must be at least 10 characters
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-label class="urgency-label">Urgency Level</mat-label>
+            <mat-radio-group formControlName="urgencyLevel" class="urgency-group">
+              <mat-radio-button value="low" color="primary">Low</mat-radio-button>
+              <mat-radio-button value="medium" color="accent">Medium</mat-radio-button>
+              <mat-radio-button value="high" color="warn">High</mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" [disabled]="complaintForm.invalid || loading">
+              <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+              <span *ngIf="!loading">Submit Complaint</span>
+            </button>
+            <button mat-button type="button" (click)="resetForm()">Reset</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading && submitted" class="success-message">
+    <mat-card>
+      <mat-card-header>
+        <mat-icon color="primary">check_circle</mat-icon>
+        <mat-card-title>Complaint Submitted Successfully</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Thank you for your feedback. Your complaint has been recorded and will be addressed by our staff.</p>
+        <p>A maintenance staff member will be assigned to resolve the issue as soon as possible.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
